@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porra Mundial 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F7F4;
+  --surface:#FFFFFF;
+  --border:#E5E3DC;
+  --text:#1A1916;
+  --text-2:#6B6860;
+  --text-3:#9B9890;
+  --green:#2D7A4F;
+  --green-bg:#EAF3DE;
+  --blue:#185FA5;
+  --blue-bg:#E6F1FB;
+  --amber:#854F0B;
+  --amber-bg:#FAEEDA;
+  --red:#A32D2D;
+  --red-bg:#FCEBEB;
+  --gold:#C8900A;
+  --radius:8px;
+  --radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+h2{font-size:16px;font-weight:600}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-brand{padding:0 16px;font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;border-right:1px solid var(--border);height:48px;display:flex;align-items:center;gap:6px}
+.nav-tabs{display:flex}
+.nav-tab{height:48px;padding:0 16px;font-size:13px;font-weight:500;color:var(--text-2);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.15s,border-color 0.15s}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* LAYOUT */
+.page{display:none;padding:20px;max-width:900px;margin:0 auto}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.card-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-head h2{font-size:14px}
+.card-body{padding:16px}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.metric-val{font-size:26px;font-weight:700;line-height:1}
+.metric-sub{font-size:11px;color:var(--text-3);margin-top:4px}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-3);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FAFAF8}
+.tbl td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.center{text-align:center}
+
+/* INPUTS */
+input[type=text],input[type=number],select{height:34px;border:1px solid var(--border);border-radius:var(--radius);padding:0 10px;font-size:13px;color:var(--text);background:var(--surface);width:100%;transition:border-color 0.15s}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border-color:var(--blue)}
+
+/* BUTTONS */
+.btn{height:34px;padding:0 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all 0.15s}
+.btn:hover{background:#F0EFE9}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover{background:#0F4A85}
+.btn-sm{height:28px;padding:0 10px;font-size:12px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.badge-green{background:var(--green-bg);color:var(--green)}
+
+/* RANKING */
+.rank-pos{font-size:18px;font-weight:800;width:32px;text-align:center}
+.rank-1{color:var(--gold)}
+.rank-2{color:#888}
+.rank-3{color:#A0522D}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.bar-wrap{flex:1;min-width:60px}
+.bar-bg{height:6px;background:#F0EFE9;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:var(--blue);border-radius:3px;transition:width 0.4s ease}
+
+/* PRONOS TABLE */
+.prono-table-wrap{overflow-x:auto}
+.prono-tbl{border-collapse:collapse;font-size:12px;min-width:600px}
+.prono-tbl th{padding:6px 8px;text-align:center;background:#FAFAF8;border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-3)}
+.prono-tbl th.name-col{text-align:left}
+.prono-tbl td{padding:5px 8px;border:1px solid var(--border);text-align:center;white-space:nowrap}
+.prono-tbl td.name-cell{text-align:left;font-weight:600;background:#FAFAF8}
+.prono-tbl td.hit{background:#EAF3DE;color:#27500A}
+.prono-tbl td.miss{background:#FCEBEB;color:#791F1F}
+.prono-tbl td.pending{background:#FFF;color:var(--text-2)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1916;color:#fff;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none}
+.toast.show{opacity:1}
+
+.gap-16{display:flex;flex-direction:column;gap:16px}
+.flex{display:flex}
+.items-center{align-items:center}
+.mt-16{margin-top:16px}
+.mb-16{margin-bottom:16px}
+.text-2{color:var(--text-2)}
+.text-sm{font-size:12px}
+.fw-600{font-weight:600}
+.empty-state{text-align:center;padding:32px 16px;color:var(--text-3)}
+.empty-state p{font-size:13px;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<nav class="nav">
+  <div class="nav-brand">⚽ Mundial 26</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('ranking',this)">Ranking</button>
+    <button class="nav-tab" onclick="showPage('pronos',this)">Pronósticos</button>
+    <button class="nav-tab" onclick="showPage('config',this)">Config</button>
+  </div>
+</nav>
+
+<!-- ===== RANKING ===== -->
+<div class="page active" id="page-ranking">
+  <div class="metrics" id="metrics-strip"></div>
+  <div class="card">
+    <div class="card-head">
+      <h2>Clasificación general</h2>
+      <span class="text-sm text-2" id="last-updated"></span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:40px">Pos</th>
+            <th>Nombre</th>
+            <th class="num">Puntos</th>
+            <th class="center">Acertó campeón</th>
+            <th style="width:140px"></th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRONÓSTICOS ===== -->
+<div class="page" id="page-pronos">
+  <div class="card mb-16">
+    <div class="card-head"><h2>Pronósticos por participante</h2></div>
+    <div class="card-body">
+      <p class="text-sm text-2" style="margin-bottom:12px">Introduce los pronósticos de cada participante. Los puntos se calculan automáticamente cuando rellenes los resultados reales en Config.</p>
+      <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+        <select id="prono-select" style="max-width:200px" onchange="loadPronoForm()"></select>
+        <button class="btn btn-sm btn-primary" onclick="savePronoInitial()">Guardar</button>
+      </div>
+      <div id="prono-form"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>Vista comparativa</h2></div>
+    <div class="prono-table-wrap" id="prono-compare-table"></div>
+  </div>
+</div>
+
+<!-- ===== CONFIG ===== -->
+<div class="page" id="page-config">
+  <div class="gap-16">
+    <div class="card">
+      <div class="card-head"><h2>Resultados oficiales</h2></div>
+      <div class="card-body">
+        <p class="text-sm text-2" style="margin-bottom:12px">Rellena estos campos cuando se conozcan los resultados. Los puntos del ranking se calculan al guardar.</p>
+        <div id="official-results-form"></div>
+        <button class="btn btn-primary mt-16" onclick="saveOfficialResults()">Guardar resultados</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Participantes</h2></div>
+      <div class="card-body">
+        <p class="text-sm text-2" style="margin-bottom:10px">Los 19 participantes están precargados. Puedes ajustar nombres si es necesario.</p>
+        <div id="participants-list"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Puntuación</h2></div>
+      <div class="card-body" id="scoring-config"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Backup</h2></div>
+      <div class="card-body">
+        <p class="text-sm text-2" style="margin-bottom:10px">Descarga todos los datos como JSON para hacer backup o compartir.</p>
+        <button class="btn" onclick="exportData()">Descargar backup JSON</button>
+        <button class="btn" onclick="importDataPrompt()" style="margin-left:8px">Importar backup</button>
+        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PARTICIPANTS = ['Isabel','Ruth','Javi','Cris','Alfonso','Aurora','Pablo','Silvia','Leandro','María','Sheyla','Rafa','Sara','Mar','Elena','Marta','Maite','Emma','Nicole'];
+
+const SCORING_DEFAULT = {campeon_ini:10, subcampeon_ini:5, goleador:5, semifinalista:3, revelacion:3};
+const SCORING_LABELS  = {campeon_ini:'Campeón', subcampeon_ini:'Subcampeón', goleador:'Máx. goleador', semifinalista:'Semifinalista (×4)', revelacion:'Equipo revelación'};
+
+const AV_COLORS = ['#EEEDFE:#3C3489','#E1F5EE:#0F6E56','#FAECE7:#993C1D','#E6F1FB:#185FA5','#FAEEDA:#854F0B','#EAF3DE:#3B6D11','#FBEAF0:#993556','#F1EFE8:#5F5E5A'];
+
+const COUNTRIES = [
+  '',
+  'Alemania',
+  'Arabia Saudí',
+  'Argelia',
+  'Argentina',
+  'Australia',
+  'Austria',
+  'Bosnia y Herzegovina',
+  'Brasil',
+  'Bélgica',
+  'Cabo Verde',
+  'Canadá',
+  'Catar',
+  'Chequia',
+  'Colombia',
+  'Corea del Sur',
+  'Costa de Marfil',
+  'Croacia',
+  'Curaçao',
+  'Ecuador',
+  'Egipto',
+  'España',
+  'Estados Unidos',
+  'Francia',
+  'Ghana',
+  'Haití',
+  'Inglaterra',
+  'Irak',
+  'Irán',
+  'Japón',
+  'Jordania',
+  'Marruecos',
+  'México',
+  'Noruega',
+  'Nueva Zelanda',
+  'Panamá',
+  'Paraguay',
+  'Países Bajos',
+  'Portugal',
+  'RD Congo',
+  'República de Corea',
+  'Senegal',
+  'Sudáfrica',
+  'Suecia',
+  'Suiza',
+  'Turquía',
+  'Túnez',
+  'Uruguay',
+  'Uzbekistán'
+];
+
+function cSel(id, val){
+  const opts = COUNTRIES.map(c=>`<option value="${c}"${val===c?' selected':''}>${c||'— Seleccionar —'}</option>`).join('');
+  return `<select id="${id}">${opts}</select>`;
+}
+
+let state = {
+  participants: [...PARTICIPANTS],
+  scoring: {...SCORING_DEFAULT},
+  pronos: {},
+  official: {campeon:'', subcampeon:'', goleador:'', sf1:'', sf2:'', sf3:'', sf4:'', revelacion:''},
+  currentPronoPart: ''
+};
+
+// ── PERSISTENCE ──────────────────────────────────────────
+function loadState(){
+  try {
+    const saved = localStorage.getItem('porra_mundial_2026');
+    if(saved){
+      const parsed = JSON.parse(saved);
+      state = {...state, ...parsed};
+    }
+    state.participants.forEach(p=>{
+      if(!state.pronos[p]) state.pronos[p] = {campeon:'',subcampeon:'',goleador:'',revelacion:'',sf1:'',sf2:'',sf3:'',sf4:''};
+    });
+  } catch(e){ console.error(e); }
+}
+
+function saveState(){
+  localStorage.setItem('porra_mundial_2026', JSON.stringify(state));
+  const el = document.getElementById('last-updated');
+  if(el) el.textContent = 'Guardado ' + new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── SCORING ENGINE ────────────────────────────────────────
+function calcPoints(prono){
+  if(!prono) return 0;
+  const o = state.official;
+  const s = state.scoring;
+  let pts = 0;
+  if(prono.campeon    && o.campeon    && prono.campeon.trim().toLowerCase()    === o.campeon.trim().toLowerCase())    pts += s.campeon_ini;
+  if(prono.subcampeon && o.subcampeon && prono.subcampeon.trim().toLowerCase() === o.subcampeon.trim().toLowerCase()) pts += s.subcampeon_ini;
+  if(prono.goleador   && o.goleador   && prono.goleador.trim().toLowerCase()   === o.goleador.trim().toLowerCase())   pts += s.goleador;
+  if(prono.revelacion && o.revelacion && prono.revelacion.trim().toLowerCase() === o.revelacion.trim().toLowerCase()) pts += s.revelacion;
+  const reals = [o.sf1,o.sf2,o.sf3,o.sf4].filter(Boolean).map(x=>x.trim().toLowerCase());
+  [prono.sf1,prono.sf2,prono.sf3,prono.sf4].filter(Boolean).forEach(p=>{
+    if(reals.includes(p.trim().toLowerCase())) pts += s.semifinalista;
+  });
+  return pts;
+}
+
+function getRanking(){
+  return state.participants.map(name=>{
+    const prono = state.pronos[name]||{};
+    const total = calcPoints(prono);
+    const acertoCampeon = !!(prono.campeon && state.official.campeon &&
+      prono.campeon.trim().toLowerCase() === state.official.campeon.trim().toLowerCase());
+    return {name, total, acertoCampeon};
+  }).sort((a,b)=>{
+    if(b.total !== a.total) return b.total - a.total;
+    if(b.acertoCampeon !== a.acertoCampeon) return (b.acertoCampeon?1:0) - (a.acertoCampeon?1:0);
+    return a.name.localeCompare(b.name);
+  });
+}
+
+// ── RENDER RANKING ────────────────────────────────────────
+function renderRanking(){
+  const ranking = getRanking();
+  const maxTotal = Math.max(...ranking.map(r=>r.total), 1);
+  const medals = ['🥇','🥈','🥉'];
+
+  document.getElementById('ranking-body').innerHTML = ranking.map((r,i)=>{
+    const posClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    const medal = i < 3 ? medals[i] : (i+1);
+    const barW = Math.round((r.total/maxTotal)*100);
+    const initials = r.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const av = AV_COLORS[state.participants.indexOf(r.name) % AV_COLORS.length].split(':');
+    return `<tr>
+      <td><span class="rank-pos ${posClass}">${medal}</span></td>
+      <td>
+        <div class="flex items-center" style="gap:10px">
+          <div class="avatar" style="background:${av[0]};color:${av[1]}">${initials}</div>
+          <span class="fw-600">${r.name}</span>
+        </div>
+      </td>
+      <td class="num fw-600">${r.total}</td>
+      <td class="center">${r.acertoCampeon ? '<span class="badge badge-green">✓</span>' : '<span style="color:var(--text-3)">—</span>'}</td>
+      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${barW}%"></div></div></div></td>
+    </tr>`;
+  }).join('');
+
+  const leader = ranking[0];
+  const second = ranking[1];
+  document.getElementById('metrics-strip').innerHTML = `
+    <div class="metric"><div class="metric-label">Líder</div><div class="metric-val" style="font-size:18px;margin-top:2px">${leader ? leader.name : '—'}</div><div class="metric-sub">${leader ? leader.total+' pts' : ''}</div></div>
+    <div class="metric"><div class="metric-label">Ventaja</div><div class="metric-val">${leader&&second ? leader.total-second.total : 0}<span style="font-size:14px;font-weight:400;color:var(--text-3)"> pts</span></div><div class="metric-sub">sobre 2.º</div></div>
+    <div class="metric"><div class="metric-label">Bote</div><div class="metric-val">95<span style="font-size:14px;font-weight:400;color:var(--text-3)"> €</span></div><div class="metric-sub">19 × 5 €</div></div>
+  `;
+}
+
+// ── PRONÓSTICOS ───────────────────────────────────────────
+function renderPronoSelect(){
+  const sel = document.getElementById('prono-select');
+  if(!state.currentPronoPart) state.currentPronoPart = state.participants[0];
+  sel.innerHTML = state.participants.map(p=>`<option value="${p}"${p===state.currentPronoPart?' selected':''}>${p}</option>`).join('');
+}
+
+function loadPronoForm(){
+  const name = document.getElementById('prono-select').value;
+  state.currentPronoPart = name;
+  const p = state.pronos[name]||{};
+  document.getElementById('prono-form').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Campeón</label>${cSel('pf-campeon', p.campeon||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Subcampeón</label>${cSel('pf-subcampeon', p.subcampeon||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Máx. goleador</label><input type="text" id="pf-goleador" value="${p.goleador||''}" placeholder="Nombre del jugador"></div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Equipo revelación</label>${cSel('pf-revelacion', p.revelacion||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Semifinalista 1</label>${cSel('pf-sf1', p.sf1||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Semifinalista 2</label>${cSel('pf-sf2', p.sf2||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Semifinalista 3</label>${cSel('pf-sf3', p.sf3||'')}</div>
+      <div><label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">Semifinalista 4</label>${cSel('pf-sf4', p.sf4||'')}</div>
+    </div>`;
+}
+
+function savePronoInitial(){
+  const name = document.getElementById('prono-select').value;
+  if(!state.pronos[name]) state.pronos[name] = {};
+  ['campeon','subcampeon','goleador','revelacion','sf1','sf2','sf3','sf4'].forEach(k=>{
+    const el = document.getElementById('pf-'+k);
+    if(el) state.pronos[name][k] = el.value;
+  });
+  saveState();
+  renderRanking();
+  renderPronoCompare();
+  toast(`Pronóstico de ${name} guardado`);
+}
+
+function renderPronoCompare(){
+  const fields  = ['campeon','subcampeon','goleador','revelacion','sf1','sf2','sf3','sf4'];
+  const labels  = ['Campeón','Subcampeón','Goleador','Revelación','SF1','SF2','SF3','SF4'];
+  const o       = state.official;
+  const realVals= [o.campeon,o.subcampeon,o.goleador,o.revelacion,o.sf1,o.sf2,o.sf3,o.sf4];
+  const reals   = [o.sf1,o.sf2,o.sf3,o.sf4].filter(Boolean).map(x=>x.trim().toLowerCase());
+  const wrap    = document.getElementById('prono-compare-table');
+  if(!wrap) return;
+
+  const header = `<tr><th class="name-col">Participante</th>${labels.map(l=>`<th>${l}</th>`).join('')}</tr>`;
+  const rows = state.participants.map(name=>{
+    const p = state.pronos[name]||{};
+    const cells = fields.map((f,i)=>{
+      const v  = p[f]||'';
+      const rv = realVals[i];
+      let cls = 'pending';
+      if(rv && v){
+        if(i>=4 && i<=7) cls = reals.includes(v.trim().toLowerCase()) ? 'hit' : 'miss';
+        else cls = v.trim().toLowerCase()===rv.trim().toLowerCase() ? 'hit' : 'miss';
+      }
+      return `<td class="${cls}">${v||'—'}</td>`;
+    });
+    return `<tr><td class="name-cell">${name}</td>${cells.join('')}</tr>`;
+  }).join('');
+
+  wrap.innerHTML = `<table class="prono-tbl"><thead>${header}</thead><tbody>${rows}</tbody></table>`;
+}
+
+// ── CONFIG ────────────────────────────────────────────────
+function renderOfficialResultsForm(){
+  const o = state.official;
+  const fields = [
+    {key:'campeon',    label:'Campeón real'},
+    {key:'subcampeon', label:'Subcampeón real'},
+    {key:'goleador',   label:'Máximo goleador'},
+    {key:'revelacion', label:'Equipo revelación'},
+    {key:'sf1',        label:'Semifinalista 1'},
+    {key:'sf2',        label:'Semifinalista 2'},
+    {key:'sf3',        label:'Semifinalista 3'},
+    {key:'sf4',        label:'Semifinalista 4'},
+  ];
+  const countryFields = ['campeon','subcampeon','revelacion','sf1','sf2','sf3','sf4'];
+  document.getElementById('official-results-form').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${fields.map(f=>`<div>
+        <label style="font-size:12px;color:var(--text-2);display:block;margin-bottom:3px">${f.label}</label>
+        ${countryFields.includes(f.key) ? cSel('or-'+f.key, o[f.key]||'') : `<input type="text" id="or-${f.key}" value="${o[f.key]||''}" placeholder="—">`}
+      </div>`).join('')}
+    </div>`;
+}
+
+function saveOfficialResults(){
+  ['campeon','subcampeon','goleador','revelacion','sf1','sf2','sf3','sf4'].forEach(k=>{
+    const el = document.getElementById('or-'+k);
+    if(el) state.official[k] = el.value;
+  });
+  saveState();
+  renderRanking();
+  renderPronoCompare();
+  toast('Resultados guardados — ranking actualizado');
+}
+
+function renderScoringConfig(){
+  document.getElementById('scoring-config').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      ${Object.keys(SCORING_LABELS).map(k=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <label style="font-size:13px;color:var(--text-2)">${SCORING_LABELS[k]}</label>
+          <input type="number" id="sc-${k}" value="${state.scoring[k]}" style="width:60px;text-align:center" min="0" onchange="updateScoring('${k}',this.value)">
+        </div>`).join('')}
+    </div>`;
+}
+
+function updateScoring(key, val){
+  state.scoring[key] = parseInt(val)||0;
+  saveState();
+  renderRanking();
+}
+
+function renderParticipantsList(){
+  document.getElementById('participants-list').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px">
+      ${state.participants.map((p,i)=>`
+        <div style="display:flex;align-items:center;gap:6px;padding:6px;background:var(--bg);border-radius:var(--radius)">
+          <span style="font-size:12px;color:var(--text-3);width:18px">${i+1}</span>
+          <input type="text" value="${p}" style="flex:1" onchange="updateParticipant(${i},this.value)">
+        </div>`).join('')}
+    </div>`;
+}
+
+function updateParticipant(i, val){
+  const old = state.participants[i];
+  state.participants[i] = val;
+  if(state.pronos[old]){ state.pronos[val] = state.pronos[old]; delete state.pronos[old]; }
+  saveState();
+}
+
+// ── NAV ───────────────────────────────────────────────────
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='ranking') renderRanking();
+  if(id==='pronos'){ renderPronoSelect(); loadPronoForm(); renderPronoCompare(); }
+  if(id==='config'){ renderOfficialResultsForm(); renderScoringConfig(); renderParticipantsList(); }
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────────
+function exportData(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'porra_mundial_2026_backup.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+function importDataPrompt(){ document.getElementById('import-file').click(); }
+function importData(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      state = {...state, ...JSON.parse(ev.target.result)};
+      saveState(); renderRanking(); toast('Datos importados correctamente');
+    }catch{ toast('Error al importar el archivo'); }
+  };
+  reader.readAsText(file);
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ── INIT ──────────────────────────────────────────────────
+loadState();
+renderRanking();
+</script>
+</body>
+</html>
